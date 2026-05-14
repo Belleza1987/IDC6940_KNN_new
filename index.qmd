@@ -51,25 +51,13 @@ The Pima Indians Diabetes dataset is widely used in machine‑learning research 
 
 # Methods
 
-## Dataset
+Methods
 
-The dataset contains 768 observations of female patients of Pima Indian heritage. Each record includes eight predictors—such as glucose level, BMI, blood pressure, and age—along with a binary outcome variable indicating diabetes status (0 = no diabetes, 1 = diabetes). The dataset is commonly used as a benchmark for evaluating classification models in medical prediction tasks (Xing & Bei, 2020).
+For this project, I used the k‑Nearest Neighbors (KNN) algorithm as the main classification method. KNN is a simple, distance‑based approach that makes predictions by looking at the most similar cases in the dataset. Instead of building a complex model, it compares a new observation to the existing data and assigns the outcome that is most common among its closest neighbors (Zhang et al., 2018).
 
-## Preprocessing
+To measure how similar two observations are, KNN uses a distance calculation, and Euclidean distance is the most common choice. This gives the algorithm a way to determine which points are “closest” in the feature space. Once the distances are calculated, the algorithm looks at the k nearest points and uses a majority vote to decide the predicted class.
 
-Several predictors contained zero values that are not physiologically meaningful, such as zero insulin or zero blood pressure. These values were treated as missing and replaced using median imputation. All predictors were then standardized through centering and scaling to ensure that each variable contributed equally to the distance calculations used by KNN. Without standardization, variables with larger numeric ranges would dominate the similarity measure and reduce model performance (Zhang, 2022).
-
-## Train–Test Split
-
-The dataset was divided into an 80% training set and a 20% testing set. The training set was used for model fitting and hyperparameter tuning, while the test set was reserved for final evaluation to provide an unbiased estimate of model performance.
-
-## Models and Tuning
-
-Four models were trained for comparison: KNN, logistic regression, decision tree, and random forest. The KNN model was tuned across values of *k* ranging from 1 to 25 using 10‑fold cross‑validation. The primary tuning metric was the Area Under the ROC Curve (AUC), with accuracy, sensitivity, and specificity also examined to provide a more complete assessment of performance.
-
-## Evaluation Metrics
-
-Model performance was evaluated using accuracy, AUC, the confusion matrix, sensitivity, and specificity. Sensitivity is particularly important in clinical screening because failing to identify true positive cases can delay diagnosis and treatment (Nain & Tomar, 2023). AUC was used as the primary metric because it reflects the model’s ability to distinguish between diabetic and non‑diabetic individuals across all classification thresholds.
+Choosing the right value of k is an important part of how KNN works. A very small k can make the model too sensitive to noise, while a large k can smooth out patterns that might actually matter (Zhang, 2022). Because of this, selecting an appropriate k is necessary for getting good performance.
 
 # Exploratory Data Analysis
 ```{r, echo=FALSE}

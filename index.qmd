@@ -51,13 +51,27 @@ The Pima Indians Diabetes dataset is widely used in machine‑learning research 
 
 # Methods
 
-Methods
+The method used in this project is the k‑Nearest Neighbors (KNN) algorithm, a simple but effective approach for classification problems. KNN does not build a traditional statistical model. Instead, it makes predictions by comparing a new observation to the existing data and determining which known cases it most closely resembles. Because of this, KNN is considered a non‑parametric, instance‑based learning method.
 
-For this project, I used the k‑Nearest Neighbors (KNN) algorithm as the main classification method. KNN is a simple, distance‑based approach that makes predictions by looking at the most similar cases in the dataset. Instead of building a complex model, it compares a new observation to the existing data and assigns the outcome that is most common among its closest neighbors (Zhang et al., 2018).
+## How KNN Measures Similarity
 
-To measure how similar two observations are, KNN uses a distance calculation, and Euclidean distance is the most common choice. This gives the algorithm a way to determine which points are “closest” in the feature space. Once the distances are calculated, the algorithm looks at the k nearest points and uses a majority vote to decide the predicted class.
+At the core of KNN is the idea of measuring how “close” or “similar” two observations are. To do this, the algorithm uses a distance formula. The most common one, and the one relevant to this project, is Euclidean distance, which calculates the straight‑line distance between two points in a multi‑dimensional space. 
 
-Choosing the right value of k is an important part of how KNN works. A very small k can make the model too sensitive to noise, while a large k can smooth out patterns that might actually matter (Zhang, 2022). Because of this, selecting an appropriate k is necessary for getting good performance.
+## Why Scaling Matters
+
+Because KNN relies entirely on distance, it is sensitive to the scale of the variables. Features with large numeric ranges can overpower smaller‑scaled features, even if they are equally important. For this reason, KNN requires that all predictors be placed on a similar scale. A common approach is standardization, which transforms each variable so that it has a mean of zero and a standard deviation of one. This ensures that each feature contributes fairly to the distance calculation.
+
+## Selecting the Neighbors
+
+Once distances are calculated, the algorithm identifies the k closest observations in the training data. These are the “neighbors” that will influence the prediction. The value of k is a tuning parameter that determines how many neighbors are considered. A small k makes the algorithm very sensitive to local patterns, while a larger k smooths out the decision boundary.
+
+## How KNN Makes a Prediction
+
+After identifying the k nearest neighbors, the algorithm looks at the class labels of those neighbors. For classification tasks, KNN uses a majority vote: whichever class appears most often among the neighbors becomes the predicted class for the new observation. This simple voting process is what allows KNN to make decisions without fitting a traditional model.
+
+## The Role of k in Model Behavior
+
+Choosing an appropriate value for k is an important part of how the KNN algorithm behaves. When k is set too low, the model becomes overly sensitive to small fluctuations in the data, which can cause it to overfit by reacting strongly to noise or outliers. On the other hand, using a very large k can make the model too generalized, smoothing the decision boundary so much that it misses meaningful patterns in the data. Because of this trade‑off, selecting a balanced k value is essential for achieving predictions that are both accurate and stable. 
 
 # Exploratory Data Analysis
 ```{r, echo=FALSE}

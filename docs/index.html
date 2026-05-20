@@ -115,7 +115,14 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">2</span> Background</a></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#how-knn-measures-similarity" id="toc-how-knn-measures-similarity" class="nav-link" data-scroll-target="#how-knn-measures-similarity"><span class="header-section-number">3.1</span> How KNN Measures Similarity</a></li>
+  <li><a href="#why-scaling-matters" id="toc-why-scaling-matters" class="nav-link" data-scroll-target="#why-scaling-matters"><span class="header-section-number">3.2</span> Why Scaling Matters</a></li>
+  <li><a href="#selecting-the-neighbors" id="toc-selecting-the-neighbors" class="nav-link" data-scroll-target="#selecting-the-neighbors"><span class="header-section-number">3.3</span> Selecting the Neighbors</a></li>
+  <li><a href="#how-knn-makes-a-prediction" id="toc-how-knn-makes-a-prediction" class="nav-link" data-scroll-target="#how-knn-makes-a-prediction"><span class="header-section-number">3.4</span> How KNN Makes a Prediction</a></li>
+  <li><a href="#the-role-of-k-in-model-behavior" id="toc-the-role-of-k-in-model-behavior" class="nav-link" data-scroll-target="#the-role-of-k-in-model-behavior"><span class="header-section-number">3.5</span> The Role of k in Model Behavior</a></li>
+  </ul></li>
   <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">4</span> Exploratory Data Analysis</a></li>
   <li><a href="#modeling-approach" id="toc-modeling-approach" class="nav-link" data-scroll-target="#modeling-approach"><span class="header-section-number">5</span> Modeling Approach</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6</span> Results</a></li>
@@ -167,10 +174,27 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="methods" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
-<p>Methods</p>
-<p>For this project, I used the k‑Nearest Neighbors (KNN) algorithm as the main classification method. KNN is a simple, distance‑based approach that makes predictions by looking at the most similar cases in the dataset. Instead of building a complex model, it compares a new observation to the existing data and assigns the outcome that is most common among its closest neighbors (Zhang et al., 2018).</p>
-<p>To measure how similar two observations are, KNN uses a distance calculation, and Euclidean distance is the most common choice. This gives the algorithm a way to determine which points are “closest” in the feature space. Once the distances are calculated, the algorithm looks at the k nearest points and uses a majority vote to decide the predicted class.</p>
-<p>Choosing the right value of k is an important part of how KNN works. A very small k can make the model too sensitive to noise, while a large k can smooth out patterns that might actually matter (Zhang, 2022). Because of this, selecting an appropriate k is necessary for getting good performance.</p>
+<p>The method used in this project is the k‑Nearest Neighbors (KNN) algorithm, a simple but effective approach for classification problems. KNN does not build a traditional statistical model. Instead, it makes predictions by comparing a new observation to the existing data and determining which known cases it most closely resembles. Because of this, KNN is considered a non‑parametric, instance‑based learning method.</p>
+<section id="how-knn-measures-similarity" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="how-knn-measures-similarity"><span class="header-section-number">3.1</span> How KNN Measures Similarity</h2>
+<p>At the core of KNN is the idea of measuring how “close” or “similar” two observations are. To do this, the algorithm uses a distance formula. The most common one, and the one relevant to this project, is Euclidean distance, which calculates the straight‑line distance between two points in a multi‑dimensional space.</p>
+</section>
+<section id="why-scaling-matters" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="why-scaling-matters"><span class="header-section-number">3.2</span> Why Scaling Matters</h2>
+<p>Because KNN relies entirely on distance, it is sensitive to the scale of the variables. Features with large numeric ranges can overpower smaller‑scaled features, even if they are equally important. For this reason, KNN requires that all predictors be placed on a similar scale. A common approach is standardization, which transforms each variable so that it has a mean of zero and a standard deviation of one. This ensures that each feature contributes fairly to the distance calculation.</p>
+</section>
+<section id="selecting-the-neighbors" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="selecting-the-neighbors"><span class="header-section-number">3.3</span> Selecting the Neighbors</h2>
+<p>Once distances are calculated, the algorithm identifies the k closest observations in the training data. These are the “neighbors” that will influence the prediction. The value of k is a tuning parameter that determines how many neighbors are considered. A small k makes the algorithm very sensitive to local patterns, while a larger k smooths out the decision boundary.</p>
+</section>
+<section id="how-knn-makes-a-prediction" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="how-knn-makes-a-prediction"><span class="header-section-number">3.4</span> How KNN Makes a Prediction</h2>
+<p>After identifying the k nearest neighbors, the algorithm looks at the class labels of those neighbors. For classification tasks, KNN uses a majority vote: whichever class appears most often among the neighbors becomes the predicted class for the new observation. This simple voting process is what allows KNN to make decisions without fitting a traditional model.</p>
+</section>
+<section id="the-role-of-k-in-model-behavior" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="the-role-of-k-in-model-behavior"><span class="header-section-number">3.5</span> The Role of k in Model Behavior</h2>
+<p>Choosing an appropriate value for k is an important part of how the KNN algorithm behaves. When k is set too low, the model becomes overly sensitive to small fluctuations in the data, which can cause it to overfit by reacting strongly to noise or outliers. On the other hand, using a very large k can make the model too generalized, smoothing the decision boundary so much that it misses meaningful patterns in the data. Because of this trade‑off, selecting a balanced k value is essential for achieving predictions that are both accurate and stable.</p>
+</section>
 </section>
 <section id="exploratory-data-analysis" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Exploratory Data Analysis</h1>

@@ -37,17 +37,17 @@ test$Outcome  <- factor(test$Outcome,  levels = c(0,1), labels = c("No","Yes"))
 ```
 # Introduction
 
-Diabetes is a chronic metabolic disease affecting more than 400 million individuals worldwide and remains a leading cause of cardiovascular complications, kidney failure, and premature mortality (International Diabetes Federation, 2023). Early detection is essential because timely intervention can significantly reduce long‑term health risks and improve patient outcomes. As healthcare systems increasingly rely on data‑driven tools, machine learning methods have become valuable for identifying individuals at elevated risk before symptoms become severe (Xing & Bei, 2020; Nain & Tomar, 2023).
+Diabetes is a chronic metabolic disease affecting more than 400 million individuals worldwide and remains a major contributor to cardiovascular complications, kidney failure, and premature mortality (International Diabetes Federation, 2023). Early identification of individuals at elevated risk is essential because timely intervention can significantly reduce long‑term health consequences. As healthcare systems increasingly adopt data‑driven tools, machine learning methods have become valuable for supporting early detection and clinical decision‑making (Xing & Bei, 2020; Nain & Tomar, 2023).
 
-Among these methods, the k‑Nearest Neighbors (KNN) algorithm is widely used for medical classification tasks due to its simplicity, interpretability, and strong performance on structured clinical datasets (Zhang et al., 2018). KNN predicts the class of a new observation by comparing it to the most similar cases in the training dataset, making it a non‑parametric, instance‑based learning method. Because the algorithm relies directly on distance calculations, its performance is highly sensitive to preprocessing steps such as scaling, handling missing values, and selecting relevant features (Zhang, 2022).
+The k‑Nearest Neighbors (KNN) algorithm is a simple, interpretable, and widely used classification method that performs well on structured clinical datasets. Because KNN relies on geometric similarity between observations, its performance depends heavily on preprocessing steps such as scaling, imputation, and feature selection (Zhang, 2022). These characteristics make KNN a suitable candidate for evaluating diabetes risk using structured clinical measurements.
 
-The purpose of this project is to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, examine how preprocessing and tuning influence classification accuracy, and determine whether KNN can serve as an effective and interpretable tool for early diabetes risk prediction.
+The purpose of this project is to apply KNN to the Pima Indians Diabetes dataset, assess how preprocessing and hyperparameter tuning influence predictive performance, and evaluate whether KNN can serve as an effective and interpretable tool for early diabetes risk prediction.
 
 # Background
 
-The Pima Indians Diabetes dataset is widely used in machine‑learning research because it provides a structured set of clinical and demographic variables relevant to diabetes risk. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing & Bei, 2020). Because KNN is a non‑parametric, distance‑based method, it is particularly sensitive to data quality, scaling, and the presence of outliers (Zhang, 2022).
+The Pima Indians Diabetes dataset is a benchmark dataset frequently used in medical machine‑learning research. It contains demographic and clinical measurements such as glucose, BMI, blood pressure, and insulin levels. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing & Bei, 2020).
 
-KNN has been applied in various medical contexts, including cardiovascular risk prediction, cancer diagnosis, and metabolic disease classification (Alkhatib et al., 2013). Its interpretability and reliance on local neighborhoods make it suitable for datasets where relationships between predictors and outcomes may be nonlinear or complex. However, its performance depends heavily on selecting an appropriate value for k and ensuring that all predictors are on a comparable scale.
+KNN has been used in various medical classification tasks, including cardiovascular risk prediction, cancer diagnosis, and metabolic disease detection (Alkhatib et al., 2013). Because KNN is non‑parametric and instance‑based, it does not assume a functional relationship between predictors and outcomes. Instead, it relies on local neighborhoods in the feature space, making it flexible for nonlinear relationships. However, KNN is sensitive to scaling, outliers, and irrelevant features, and its performance depends heavily on selecting an appropriate value for𝑘 (Zhang, 2022).
 
 # Methods
 
@@ -140,8 +140,15 @@ Before creating visualizations, the outcome variable must be converted into a ca
 This ensures that plots correctly display the two outcome groups—**No Diabetes** and **Diabetes**—rather than treating them as numeric values.
 
 ```{r, echo=FALSE}
-df_processed$Outcome <- factor(df_processed$Outcome,
-                               labels = c("No Diabetes", "Diabetes"))
+df_processed <- bind_cols(predictors_processed, Outcome = outcome)
+df_processed <- na.omit(df_processed)
+
+# Convert Outcome to factor BEFORE any EDA plots
+df_processed$Outcome <- factor(
+  df_processed$Outcome,
+  levels = c(0, 1),
+  labels = c("No Diabetes", "Diabetes")
+)
 ```
 ## Outcome Distribution
 
@@ -153,8 +160,11 @@ df_processed %>%
   ggplot(aes(x = Outcome, y = n, fill = Outcome)) +
   geom_col() +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
-  labs(title = "Outcome Distribution",
-       y = "Count", x = "Outcome") +
+  labs(
+    title = "Outcome Distribution",
+    y = "Count",
+    x = "Outcome"
+  ) +
   theme_minimal()
 ```
 ## Glucose Distribution by Outcome
@@ -162,12 +172,14 @@ df_processed %>%
 Glucose levels show a clear separation between groups: individuals with diabetes tend to have higher glucose values. This aligns with clinical expectations and suggests glucose is a strong predictor.
 
 ```{r, echo=FALSE}
-
 ggplot(df_processed, aes(x = Glucose, fill = Outcome)) +
   geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
-  labs(title = "Glucose Distribution by Diabetes Outcome",
-       x = "Glucose", y = "Count") +
+  labs(
+    title = "Glucose Distribution by Diabetes Outcome",
+    x = "Glucose",
+    y = "Count"
+  ) +
   theme_minimal()
 ```
 ## BMI Distribution by Outcome
@@ -175,12 +187,14 @@ ggplot(df_processed, aes(x = Glucose, fill = Outcome)) +
 Higher BMI values are more common among diabetic individuals, consistent with known clinical risk factors.
 
 ```{r, echo=FALSE}
-
 ggplot(df_processed, aes(x = BMI, fill = Outcome)) +
   geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
-  labs(title = "BMI Distribution by Diabetes Outcome",
-       x = "BMI", y = "Count") +
+  labs(
+    title = "BMI Distribution by Diabetes Outcome",
+    x = "BMI",
+    y = "Count"
+  ) +
   theme_minimal()
 ```
 ## Correlation Structure of Predictors
@@ -189,7 +203,13 @@ A correlation heatmap was generated to examine relationships among predictors. G
 
 ```{r, echo=FALSE}
 numeric_vars <- df_processed %>% select(-Outcome)
-corrplot(cor(numeric_vars), method = "color")
+
+corrplot(
+  cor(numeric_vars),
+  method = "color",
+  tl.col = "black",
+  tl.cex = 0.8
+)
 ```
 # Modeling Approach
 
@@ -226,7 +246,6 @@ The cross‑validation results indicated that k = r best_k produced the highest 
 ```{r, echo=FALSE}
 plot(knn_model)
 ```
-
 The tuning curve above shows how AUC changes across different values of k. The optimal value balances bias and variance, avoiding overfitting while maintaining strong predictive power.
 
 ## Final Model Evaluation
@@ -262,18 +281,21 @@ ggplot(cm_df, aes(x = Predicted, y = Actual, fill = Freq)) +
   ) +
   theme_minimal(base_size = 14)
 ```
-
 ## Interpretation
 
 The KNN model demonstrated strong predictive performance, achieving an accuracy of approximately 0.78 and an AUC of 0.86. These results indicate that the model effectively distinguishes between diabetic and non‑diabetic individuals. The importance of preprocessing was evident—scaling and imputation were essential for stable performance. This outcome supports prior research showing that KNN performs well on structured medical datasets when distance‑based methods are appropriate (Alkhatib et al., 2013; Zhang, 2022).
 
 # Results
 
-The K‑Nearest Neighbors (KNN) model demonstrated strong predictive performance on the test dataset. Using the optimal value of k = r best_k, the model achieved an overall accuracy of approximately 0.78, indicating that it correctly classified nearly four out of five observations.
+The final KNN model, tuned using 10‑fold cross‑validation, selected k = 21 as the optimal number of neighbors based on the highest average AUC. Using this value, the model was evaluated on the test dataset to assess its predictive performance.
 
-To further evaluate discriminatory ability, the model’s predicted probabilities were used to compute the Area Under the Receiver Operating Characteristic Curve (AUC). The resulting AUC of approximately 0.86 reflects excellent separation between individuals with and without diabetes.
+The model achieved an overall accuracy of approximately 0.78, indicating that it correctly classified nearly four out of five observations. While accuracy provides a general measure of performance, it can be misleading in moderately imbalanced datasets such as this one. Therefore, additional metrics were examined to better understand the model’s discriminatory ability.
 
-A confusion matrix was generated to summarize classification performance. The matrix displays the distribution of true positives, true negatives, false positives, and false negatives, providing insight into how the model performs across outcome categories. A visual representation of the confusion matrix is shown in Figure X, with darker shading indicating higher cell frequencies
+The predicted probabilities were used to compute the Area Under the ROC Curve (AUC), which reflects the model’s ability to distinguish between diabetic and non‑diabetic individuals. The resulting AUC of approximately 0.86 indicates excellent discrimination, consistent with the patterns observed in the exploratory analysis where glucose and BMI showed clear separation between outcome groups.
+
+A confusion matrix was generated to summarize classification performance across the two outcome categories. The matrix shows a strong ability to correctly identify non‑diabetic individuals (true negatives) while maintaining reasonable sensitivity for detecting diabetic cases. The visual representation of the confusion matrix highlights the distribution of true positives, true negatives, false positives, and false negatives, providing insight into the model’s strengths and areas for improvement.
+
+Overall, the results demonstrate that the tuned KNN model performs well on this dataset, achieving strong accuracy and excellent AUC. These findings support the use of distance‑based methods for structured clinical data when appropriate preprocessing and tuning procedures are applied.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -314,15 +336,31 @@ ggplot(cm_df, aes(x = Predicted, y = Actual, fill = Freq)) +
 
 # Discussion
 
-The results show that KNN can be an effective model for predicting diabetes when the data is properly preprocessed and the number of neighbors is carefully tuned. The strong AUC value suggests that the model is able to distinguish well between diabetic and non‑diabetic individuals. These findings are consistent with previous research showing that KNN performs well on medical classification tasks when distance‑based methods are appropriate (Alkhatib et al., 2013). The importance of preprocessing was also clear in this project. Without scaling and imputation, the model’s performance would have been significantly weaker, which aligns with recommendations in the literature (Zhang, 2022).
+The findings of this project show that the K‑Nearest Neighbors algorithm can effectively classify diabetes outcomes when the data is properly preprocessed and the tuning parameter is selected using cross‑validation. The model achieved an accuracy of approximately 0.78 and an AUC of 0.86, indicating strong discriminatory ability. These results are consistent with prior research demonstrating that KNN performs well on structured medical datasets where relationships between predictors and outcomes may be nonlinear (Alkhatib et al., 2013; Xing & Bei, 2020).
+
+Patterns observed in the exploratory data analysis help explain the model’s performance. Variables such as glucose and BMI showed clear separation between diabetic and non‑diabetic individuals, suggesting that these predictors carry meaningful signal for classification. The correlation heatmap further supported this by highlighting moderate associations among key clinical variables. Because KNN relies on geometric similarity, the presence of well‑separated clusters in the data likely contributed to the model’s strong AUC.
+
+Preprocessing played a critical role in achieving stable performance. Standardizing predictors ensured that variables with larger numeric ranges, such as glucose, did not dominate the distance calculations. Median imputation helped preserve the structure of the dataset while addressing biologically implausible zero values. These steps align with recommendations in the literature emphasizing the importance of scaling and data quality for distance‑based algorithms (Zhang, 2022).
+
+Despite its strengths, KNN has limitations that were evident in this project. The algorithm does not provide feature importance measures, making interpretation less straightforward than with parametric models. Additionally, KNN can struggle with noisy or high‑dimensional data, and its computational cost increases with dataset size. While these issues were manageable for the Pima dataset, they may pose challenges in larger clinical applications.
+
+Overall, the results suggest that KNN is a viable and interpretable method for early diabetes risk prediction, provided that appropriate preprocessing and tuning procedures are applied. The model’s strong performance highlights the potential of simple, non‑parametric algorithms in clinical decision‑support settings.
 
 # Limitations
 
-Although the model performed well, there are several limitations to consider. The dataset is relatively small and represents a specific population, which limits generalizability. KNN is also computationally expensive for larger datasets because it must compute distances for every prediction. Additionally, KNN does not provide direct insight into feature importance, which can make interpretation more challenging compared to models like logistic regression or decision trees.
+Although the KNN model performed well, several limitations should be considered when interpreting the results. First, the Pima Indians Diabetes dataset is relatively small and represents a very specific population, which limits the generalizability of the findings to broader clinical settings. Larger and more diverse datasets may reveal different patterns or require alternative modeling strategies.
+
+Second, KNN is computationally expensive for large datasets because it must compute distances to every training observation at prediction time. While this was manageable for the dataset used in this project, it may become impractical in real‑time clinical applications or when working with high‑volume electronic health records.
+
+Third, KNN does not provide direct insight into feature importance, making interpretation more challenging compared to models such as logistic regression, decision trees, or ensemble methods. This lack of interpretability can be a drawback in medical contexts where understanding the contribution of individual predictors is essential for clinical decision‑making.
+
+Finally, KNN is sensitive to noise, outliers, and irrelevant features. Although preprocessing steps such as scaling and imputation improved performance, the algorithm may still be affected by measurement error or uninformative predictors. Future work could explore dimensionality reduction or feature selection techniques to mitigate these issues.
 
 # Conclusion
 
-The KNN algorithm proved to be a reliable approach for predicting diabetes risk when the data was properly preprocessed and the tuning parameter was selected using cross‑validation. With strong accuracy and AUC values, the model shows promise as a tool for early diabetes risk assessment.
+The results of this project demonstrate that the K‑Nearest Neighbors algorithm can serve as an effective and interpretable approach for predicting diabetes risk when appropriate preprocessing and tuning procedures are applied. After handling missing values, standardizing predictors, and selecting the optimal number of neighbors through cross‑validation, the final model achieved strong performance, with an accuracy of approximately 0.78 and an AUC of 0.86. These metrics indicate that the model is capable of distinguishing well between diabetic and non‑diabetic individuals, aligning with findings from prior research on distance‑based classifiers in medical settings.
+
+Beyond predictive accuracy, this project highlights the importance of data quality and preprocessing for algorithms that rely on geometric similarity. Standardization, imputation, and careful tuning were essential for achieving stable performance, reinforcing the sensitivity of KNN to scale and noise. Although the dataset’s size and population specificity limit generalizability, the results suggest that KNN can be a practical tool for early diabetes risk assessment in structured clinical environments. Future work could explore feature selection, dimensionality reduction, or comparisons with alternative classifiers to further enhance predictive performance and interpretability.
 
 # References
 

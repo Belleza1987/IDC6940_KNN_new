@@ -131,53 +131,75 @@ KNN has several limitations:
 - Requires careful tuning of \(k\).
 
 # Exploratory Data Analysis
+
+Before modeling, several exploratory analyses were conducted to understand the distribution of key predictors and their relationship to diabetes outcomes. Because the dataset contains clinical measurements with varying scales, visualizing these variables helps identify patterns that may influence model performance.
+
+## Ensure Outcome is a factor for plotting
+
+Before creating visualizations, the outcome variable must be converted into a categorical factor.  
+This ensures that plots correctly display the two outcome groups—**No Diabetes** and **Diabetes**—rather than treating them as numeric values.
+
 ```{r, echo=FALSE}
-# Basic summaries
-head(df_processed)
-summary(df_processed)
-
-# Convert Outcome to factor for plotting
-df_processed$Outcome <- factor(df_processed$Outcome, 
-                               levels = c(0,1),
+df_processed$Outcome <- factor(df_processed$Outcome,
                                labels = c("No Diabetes", "Diabetes"))
+```
+## Outcome Distribution
 
-# Outcome distribution
+The dataset is moderately imbalanced, with more non‑diabetic cases than diabetic cases. This imbalance highlights the importance of using metrics such as AUC in addition to accuracy.
+
+```{r, echo=FALSE}
+
 df_processed %>%
   count(Outcome) %>%
   ggplot(aes(x = Outcome, y = n, fill = Outcome)) +
   geom_col() +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
-  labs(title = "Outcome Distribution", y = "Count", x = "Outcome") +
+  labs(title = "Outcome Distribution",
+       y = "Count", x = "Outcome") +
   theme_minimal()
+```
+## Glucose Distribution by Outcome
 
-# Glucose histogram
+Glucose levels show a clear separation between groups: individuals with diabetes tend to have higher glucose values. This aligns with clinical expectations and suggests glucose is a strong predictor.
+
+```{r, echo=FALSE}
+
 ggplot(df_processed, aes(x = Glucose, fill = Outcome)) +
   geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
   labs(title = "Glucose Distribution by Diabetes Outcome",
        x = "Glucose", y = "Count") +
   theme_minimal()
+```
+## BMI Distribution by Outcome
 
-# BMI histogram
+Higher BMI values are more common among diabetic individuals, consistent with known clinical risk factors.
+
+```{r, echo=FALSE}
+
 ggplot(df_processed, aes(x = BMI, fill = Outcome)) +
   geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
   scale_fill_manual(values = c("steelblue", "firebrick")) +
   labs(title = "BMI Distribution by Diabetes Outcome",
        x = "BMI", y = "Count") +
   theme_minimal()
+```
+## Correlation Structure of Predictors
 
-# Correlation plot (numeric variables only)
+A correlation heatmap was generated to examine relationships among predictors. Glucose, BMI, and Age show moderate correlations with the outcome and with each other.
+
+```{r, echo=FALSE}
 numeric_vars <- df_processed %>% select(-Outcome)
 corrplot(cor(numeric_vars), method = "color")
 ```
-
 # Modeling Approach
 
-The K‑Nearest Neighbors (KNN) algorithm was used for this project because it performs well on structured medical datasets and has been shown to be effective in similar health‑related prediction tasks (Xing & Bei, 2020). Before training the model, all numeric predictors were standardized so that each variable contributed equally to the distance calculations. This step is especially important in clinical datasets where measurements, such as glucose and BMI, exist on very different scales.
+The **K‑Nearest Neighbors (KNN)** algorithm was selected for this project because it performs well on structured medical datasets and has been shown to be effective in similar health‑related prediction tasks (Xing & Bei, 2020). Before training the model, all numeric predictors were standardized so that each variable contributed equally to the distance calculations. This step is especially important in clinical datasets where measurements such as glucose and BMI exist on very different scales.
 
-To identify an appropriate value for k, I ran a tuning process using 10‑fold cross‑validation. Each candidate model was evaluated using the Area Under the ROC Curve (AUC), which provides a more reliable measure of discrimination than accuracy alone, especially in medical prediction settings (Nain & Tomar, 2023). I tested values of k from 1 through 25, and the results showed that k = 21 produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018).
+## 5.1 Model Tuning and Validation
 
-After selecting k = 21, the final model was trained on the full training set and evaluated on the test set. Performance was assessed using AUC, accuracy, sensitivity, specificity, and the confusion matrix to understand how well the model identified both positive and negative cases. This approach ensured that the model was tuned systematically and grounded in established practices for predictive modeling in healthcare.
+To identify an appropriate value for *k*, a tuning process was conducted using **10‑fold cross‑validation**. Each candidate model was evaluated using the **Area Under the ROC Curve (AUC)**, which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain & Tomar, 2023).
+
 ```{r, echo=FALSE}
 ctrl <- trainControl(
   method = "cv",
@@ -197,8 +219,55 @@ knn_model <- train(
 )
 
 best_k <- knn_model$bestTune$k
-best_k
 ```
+The cross‑validation results indicated that k = r best_k produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018).
+
+## Tuning Curve
+
+```{r, echo=FALSE}
+plot(knn_model)
+```
+
+The tuning curve above shows how AUC changes across different values of k. The optimal value balances bias and variance, avoiding overfitting while maintaining strong predictive power.
+
+## Final Model Evaluation
+
+After selecting k = 21, the final model was trained on the full training set and evaluated on the test set. Performance was assessed using AUC, accuracy, sensitivity, specificity, and the confusion matrix to understand how well the model identified both positive and negative cases. This systematic approach ensured that the model was tuned according to established practices for predictive modeling in healthcare.
+
+```{r, echo=FALSE}
+
+pred <- predict(knn_model, test)
+prob <- predict(knn_model, test, type = "prob")[, "Yes"]
+
+cm <- confusionMatrix(pred, test$Outcome)
+auc <- roc(response = ifelse(test$Outcome == "Yes", 1, 0),
+           predictor = prob)$auc
+
+cm
+auc
+```
+## Confusion Matrix Visualization
+
+```{r, echo=FALSE}
+cm_df <- as.data.frame(cm$table)
+colnames(cm_df) <- c("Predicted", "Actual", "Freq")
+
+ggplot(cm_df, aes(x = Predicted, y = Actual, fill = Freq)) +
+  geom_tile(color = "white", linewidth = 1.2) +
+  geom_text(aes(label = Freq), size = 6, color = "white") +
+  scale_fill_gradient(low = "#6BAED6", high = "#08519C") +
+  labs(
+    title = paste0("Confusion Matrix for KNN Model (k = ", best_k, ")"),
+    x = "Predicted Label",
+    y = "Actual Label"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+## Interpretation
+
+The KNN model demonstrated strong predictive performance, achieving an accuracy of approximately 0.78 and an AUC of 0.86. These results indicate that the model effectively distinguishes between diabetic and non‑diabetic individuals. The importance of preprocessing was evident—scaling and imputation were essential for stable performance. This outcome supports prior research showing that KNN performs well on structured medical datasets when distance‑based methods are appropriate (Alkhatib et al., 2013; Zhang, 2022).
+
 # Results
 
 The K‑Nearest Neighbors (KNN) model demonstrated strong predictive performance on the test dataset. Using the optimal value of k = r best_k, the model achieved an overall accuracy of approximately 0.78, indicating that it correctly classified nearly four out of five observations.
@@ -254,7 +323,7 @@ Although the model performed well, there are several limitations to consider. Th
 
 # Conclusion
 
-The findings from this project show that the K‑Nearest Neighbors algorithm can be a reliable approach for predicting diabetes risk when the data is carefully prepared and the tuning parameter is selected appropriately. With an accuracy of about 0.78 and an AUC of about 0.86, the model demonstrated strong overall performance and was able to separate diabetic and non‑diabetic cases effectively. Although KNN has limitations—such as sensitivity to scaling and higher computational cost—it remains a practical and interpretable method for classification tasks in healthcare settings. These results suggest that KNN can serve as a useful tool for supporting early diabetes risk assessment, especially when paired with thoughtful preprocessing and validation.
+The KNN algorithm proved to be a reliable approach for predicting diabetes risk when the data was properly preprocessed and the tuning parameter was selected using cross‑validation. With strong accuracy and AUC values, the model shows promise as a tool for early diabetes risk assessment.
 
 # References
 

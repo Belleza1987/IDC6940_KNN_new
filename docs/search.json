@@ -215,5 +215,75 @@
     "title": "KNN Diabetes Prediction Capstone",
     "section": "3.8 Limitations",
     "text": "3.8 Limitations\nKNN has several limitations:\n\nComputationally expensive for large datasets because distances must be computed for every prediction.\n\nSensitive to irrelevant or redundant features.\n\nSensitive to outliers, which can distort neighborhood structure.\n\nDoes not provide feature importance or model coefficients.\n\nPerformance declines in high‑dimensional spaces.\n\nRequires careful tuning of (k)."
+  },
+  {
+    "objectID": "index.html#ensure-outcome-is-a-factor-for-plotting",
+    "href": "index.html#ensure-outcome-is-a-factor-for-plotting",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "4.1 Ensure Outcome is a factor for plotting",
+    "text": "4.1 Ensure Outcome is a factor for plotting\nBefore creating visualizations, the outcome variable must be converted into a categorical factor.\nThis ensures that plots correctly display the two outcome groups—No Diabetes and Diabetes—rather than treating them as numeric values."
+  },
+  {
+    "objectID": "index.html#outcome-distribution",
+    "href": "index.html#outcome-distribution",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "4.2 Outcome Distribution",
+    "text": "4.2 Outcome Distribution\nThe dataset is moderately imbalanced, with more non‑diabetic cases than diabetic cases. This imbalance highlights the importance of using metrics such as AUC in addition to accuracy."
+  },
+  {
+    "objectID": "index.html#glucose-distribution-by-outcome",
+    "href": "index.html#glucose-distribution-by-outcome",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "4.3 Glucose Distribution by Outcome",
+    "text": "4.3 Glucose Distribution by Outcome\nGlucose levels show a clear separation between groups: individuals with diabetes tend to have higher glucose values. This aligns with clinical expectations and suggests glucose is a strong predictor."
+  },
+  {
+    "objectID": "index.html#bmi-distribution-by-outcome",
+    "href": "index.html#bmi-distribution-by-outcome",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "4.4 BMI Distribution by Outcome",
+    "text": "4.4 BMI Distribution by Outcome\nHigher BMI values are more common among diabetic individuals, consistent with known clinical risk factors."
+  },
+  {
+    "objectID": "index.html#correlation-structure-of-predictors",
+    "href": "index.html#correlation-structure-of-predictors",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "4.5 Correlation Structure of Predictors",
+    "text": "4.5 Correlation Structure of Predictors\nA correlation heatmap was generated to examine relationships among predictors. Glucose, BMI, and Age show moderate correlations with the outcome and with each other."
+  },
+  {
+    "objectID": "index.html#model-tuning-and-validation",
+    "href": "index.html#model-tuning-and-validation",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "5.1 5.1 Model Tuning and Validation",
+    "text": "5.1 5.1 Model Tuning and Validation\nTo identify an appropriate value for k, a tuning process was conducted using 10‑fold cross‑validation. Each candidate model was evaluated using the Area Under the ROC Curve (AUC), which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain & Tomar, 2023).\nThe cross‑validation results indicated that k = r best_k produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018)."
+  },
+  {
+    "objectID": "index.html#tuning-curve",
+    "href": "index.html#tuning-curve",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "5.2 Tuning Curve",
+    "text": "5.2 Tuning Curve\n\n\n\n\n\n\n\n\n\nThe tuning curve above shows how AUC changes across different values of k. The optimal value balances bias and variance, avoiding overfitting while maintaining strong predictive power."
+  },
+  {
+    "objectID": "index.html#final-model-evaluation",
+    "href": "index.html#final-model-evaluation",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "5.3 Final Model Evaluation",
+    "text": "5.3 Final Model Evaluation\nAfter selecting k = 21, the final model was trained on the full training set and evaluated on the test set. Performance was assessed using AUC, accuracy, sensitivity, specificity, and the confusion matrix to understand how well the model identified both positive and negative cases. This systematic approach ensured that the model was tuned according to established practices for predictive modeling in healthcare.\n\n\nSetting levels: control = 0, case = 1\n\n\nSetting direction: controls &lt; cases\n\n\nConfusion Matrix and Statistics\n\n          Reference\nPrediction No Yes\n       No  90  22\n       Yes 11  30\n                                          \n               Accuracy : 0.7843          \n                 95% CI : (0.7106, 0.8466)\n    No Information Rate : 0.6601          \n    P-Value [Acc &gt; NIR] : 0.0005461       \n                                          \n                  Kappa : 0.4933          \n                                          \n Mcnemar's Test P-Value : 0.0817228       \n                                          \n            Sensitivity : 0.8911          \n            Specificity : 0.5769          \n         Pos Pred Value : 0.8036          \n         Neg Pred Value : 0.7317          \n             Prevalence : 0.6601          \n         Detection Rate : 0.5882          \n   Detection Prevalence : 0.7320          \n      Balanced Accuracy : 0.7340          \n                                          \n       'Positive' Class : No              \n                                          \n\n\nArea under the curve: 0.8601"
+  },
+  {
+    "objectID": "index.html#confusion-matrix-visualization",
+    "href": "index.html#confusion-matrix-visualization",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "5.4 Confusion Matrix Visualization",
+    "text": "5.4 Confusion Matrix Visualization"
+  },
+  {
+    "objectID": "index.html#interpretation",
+    "href": "index.html#interpretation",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "5.5 Interpretation",
+    "text": "5.5 Interpretation\nThe KNN model demonstrated strong predictive performance, achieving an accuracy of approximately 0.78 and an AUC of 0.86. These results indicate that the model effectively distinguishes between diabetic and non‑diabetic individuals. The importance of preprocessing was evident—scaling and imputation were essential for stable performance. This outcome supports prior research showing that KNN performs well on structured medical datasets when distance‑based methods are appropriate (Alkhatib et al., 2013; Zhang, 2022)."
   }
 ]

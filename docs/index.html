@@ -155,8 +155,22 @@ window.Quarto = {
   <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions"><span class="header-section-number">3.7</span> Assumptions</a></li>
   <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">3.8</span> Limitations</a></li>
   </ul></li>
-  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">4</span> Exploratory Data Analysis</a></li>
-  <li><a href="#modeling-approach" id="toc-modeling-approach" class="nav-link" data-scroll-target="#modeling-approach"><span class="header-section-number">5</span> Modeling Approach</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">4</span> Exploratory Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#ensure-outcome-is-a-factor-for-plotting" id="toc-ensure-outcome-is-a-factor-for-plotting" class="nav-link" data-scroll-target="#ensure-outcome-is-a-factor-for-plotting"><span class="header-section-number">4.1</span> Ensure Outcome is a factor for plotting</a></li>
+  <li><a href="#outcome-distribution" id="toc-outcome-distribution" class="nav-link" data-scroll-target="#outcome-distribution"><span class="header-section-number">4.2</span> Outcome Distribution</a></li>
+  <li><a href="#glucose-distribution-by-outcome" id="toc-glucose-distribution-by-outcome" class="nav-link" data-scroll-target="#glucose-distribution-by-outcome"><span class="header-section-number">4.3</span> Glucose Distribution by Outcome</a></li>
+  <li><a href="#bmi-distribution-by-outcome" id="toc-bmi-distribution-by-outcome" class="nav-link" data-scroll-target="#bmi-distribution-by-outcome"><span class="header-section-number">4.4</span> BMI Distribution by Outcome</a></li>
+  <li><a href="#correlation-structure-of-predictors" id="toc-correlation-structure-of-predictors" class="nav-link" data-scroll-target="#correlation-structure-of-predictors"><span class="header-section-number">4.5</span> Correlation Structure of Predictors</a></li>
+  </ul></li>
+  <li><a href="#modeling-approach" id="toc-modeling-approach" class="nav-link" data-scroll-target="#modeling-approach"><span class="header-section-number">5</span> Modeling Approach</a>
+  <ul class="collapse">
+  <li><a href="#model-tuning-and-validation" id="toc-model-tuning-and-validation" class="nav-link" data-scroll-target="#model-tuning-and-validation"><span class="header-section-number">5.1</span> 5.1 Model Tuning and Validation</a></li>
+  <li><a href="#tuning-curve" id="toc-tuning-curve" class="nav-link" data-scroll-target="#tuning-curve"><span class="header-section-number">5.2</span> Tuning Curve</a></li>
+  <li><a href="#final-model-evaluation" id="toc-final-model-evaluation" class="nav-link" data-scroll-target="#final-model-evaluation"><span class="header-section-number">5.3</span> Final Model Evaluation</a></li>
+  <li><a href="#confusion-matrix-visualization" id="toc-confusion-matrix-visualization" class="nav-link" data-scroll-target="#confusion-matrix-visualization"><span class="header-section-number">5.4</span> Confusion Matrix Visualization</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">5.5</span> Interpretation</a></li>
+  </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6</span> Results</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">7</span> Discussion</a></li>
   <li><a href="#limitations-1" id="toc-limitations-1" class="nav-link" data-scroll-target="#limitations-1"><span class="header-section-number">8</span> Limitations</a></li>
@@ -295,86 +309,146 @@ z = \frac{x - \mu}{\sigma}
 </section>
 <section id="exploratory-data-analysis" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Exploratory Data Analysis</h1>
+<p>Before modeling, several exploratory analyses were conducted to understand the distribution of key predictors and their relationship to diabetes outcomes. Because the dataset contains clinical measurements with varying scales, visualizing these variables helps identify patterns that may influence model performance.</p>
+<section id="ensure-outcome-is-a-factor-for-plotting" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="ensure-outcome-is-a-factor-for-plotting"><span class="header-section-number">4.1</span> Ensure Outcome is a factor for plotting</h2>
+<p>Before creating visualizations, the outcome variable must be converted into a categorical factor.<br>
+This ensures that plots correctly display the two outcome groups—<strong>No Diabetes</strong> and <strong>Diabetes</strong>—rather than treating them as numeric values.</p>
+</section>
+<section id="outcome-distribution" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="outcome-distribution"><span class="header-section-number">4.2</span> Outcome Distribution</h2>
+<p>The dataset is moderately imbalanced, with more non‑diabetic cases than diabetic cases. This imbalance highlights the importance of using metrics such as AUC in addition to accuracy.</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>  Pregnancies    Glucose BloodPressure SkinThickness    Insulin        BMI
-1   0.6395305  0.8617221   -0.03272323    0.55804049 -0.2571922  0.1649875
-2  -0.8443348 -1.2014407   -0.51729142   -0.01464349 -0.2571922 -0.8458446
-3   1.2330766  2.0079237   -0.67881415   -0.01464349 -0.2571922 -1.3223797
-4  -0.8443348 -1.0704463   -0.51729142   -0.58732747 -0.5181880 -0.6292377
-5  -1.1411079  0.5014873   -2.61708691    0.55804049  0.1048342  1.5368309
-6   0.3427574 -0.1862336    0.12879950   -0.01464349 -0.2571922 -0.9902491
-  DiabetesPedigreeFunction         Age Outcome
-1                0.4681869  1.42506672       1
-2               -0.3648230 -0.19054773       0
-3                0.6040037 -0.10551539       1
-4               -0.9201630 -1.04087112       0
-5                5.4813370 -0.02048305       1
-6               -0.8175458 -0.27558007       0</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Pregnancies         Glucose           BloodPressure       SkinThickness      
- Min.   :-1.1411   Min.   :-2.5441340   Min.   :-3.909269   Min.   :-2.114485  
- 1st Qu.:-0.8443   1st Qu.:-0.7183986   1st Qu.:-0.678814   1st Qu.:-0.396433  
- Median :-0.2508   Median :-0.1534850   Median :-0.032723   Median :-0.014643  
- Mean   : 0.0000   Mean   :-0.0009993   Mean   :-0.001491   Mean   :-0.004328  
- 3rd Qu.: 0.6395   3rd Qu.: 0.6079203   3rd Qu.: 0.613368   3rd Qu.: 0.271699  
- Max.   : 3.9040   Max.   : 2.5319016   Max.   : 4.005345   Max.   : 6.666670  
-    Insulin             BMI            DiabetesPedigreeFunction
- Min.   :-1.1917   Min.   :-2.058843   Min.   :-1.1888         
- 1st Qu.:-0.2867   1st Qu.:-0.715880   1st Qu.:-0.6885         
- Median :-0.2572   Median :-0.022738   Median :-0.2999         
- Mean   :-0.1252   Mean   :-0.000326   Mean   : 0.0000         
- 3rd Qu.:-0.2382   3rd Qu.: 0.598201   3rd Qu.: 0.4659         
- Max.   : 5.8131   Max.   : 5.002541   Max.   : 5.8797         
-      Age             Outcome     
- Min.   :-1.0409   Min.   :0.000  
- 1st Qu.:-0.7858   1st Qu.:0.000  
- Median :-0.3606   Median :0.000  
- Mean   : 0.0000   Mean   :0.349  
- 3rd Qu.: 0.6598   3rd Qu.:1.000  
- Max.   : 4.0611   Max.   :1.000  </code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
+<section id="glucose-distribution-by-outcome" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="glucose-distribution-by-outcome"><span class="header-section-number">4.3</span> Glucose Distribution by Outcome</h2>
+<p>Glucose levels show a clear separation between groups: individuals with diabetes tend to have higher glucose values. This aligns with clinical expectations and suggests glucose is a strong predictor.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bmi-distribution-by-outcome" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="bmi-distribution-by-outcome"><span class="header-section-number">4.4</span> BMI Distribution by Outcome</h2>
+<p>Higher BMI values are more common among diabetic individuals, consistent with known clinical risk factors.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation-structure-of-predictors" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="correlation-structure-of-predictors"><span class="header-section-number">4.5</span> Correlation Structure of Predictors</h2>
+<p>A correlation heatmap was generated to examine relationships among predictors. Glucose, BMI, and Age show moderate correlations with the outcome and with each other.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
 <section id="modeling-approach" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Modeling Approach</h1>
-<p>The K‑Nearest Neighbors (KNN) algorithm was used for this project because it performs well on structured medical datasets and has been shown to be effective in similar health‑related prediction tasks (Xing &amp; Bei, 2020). Before training the model, all numeric predictors were standardized so that each variable contributed equally to the distance calculations. This step is especially important in clinical datasets where measurements, such as glucose and BMI, exist on very different scales.</p>
-<p>To identify an appropriate value for k, I ran a tuning process using 10‑fold cross‑validation. Each candidate model was evaluated using the Area Under the ROC Curve (AUC), which provides a more reliable measure of discrimination than accuracy alone, especially in medical prediction settings (Nain &amp; Tomar, 2023). I tested values of k from 1 through 25, and the results showed that k = 21 produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018).</p>
-<p>After selecting k = 21, the final model was trained on the full training set and evaluated on the test set. Performance was assessed using AUC, accuracy, sensitivity, specificity, and the confusion matrix to understand how well the model identified both positive and negative cases. This approach ensured that the model was tuned systematically and grounded in established practices for predictive modeling in healthcare.</p>
+<p>The <strong>K‑Nearest Neighbors (KNN)</strong> algorithm was selected for this project because it performs well on structured medical datasets and has been shown to be effective in similar health‑related prediction tasks (Xing &amp; Bei, 2020). Before training the model, all numeric predictors were standardized so that each variable contributed equally to the distance calculations. This step is especially important in clinical datasets where measurements such as glucose and BMI exist on very different scales.</p>
+<section id="model-tuning-and-validation" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="model-tuning-and-validation"><span class="header-section-number">5.1</span> 5.1 Model Tuning and Validation</h2>
+<p>To identify an appropriate value for <em>k</em>, a tuning process was conducted using <strong>10‑fold cross‑validation</strong>. Each candidate model was evaluated using the <strong>Area Under the ROC Curve (AUC)</strong>, which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain &amp; Tomar, 2023).</p>
+<p>The cross‑validation results indicated that k = r best_k produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018).</p>
+</section>
+<section id="tuning-curve" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="tuning-curve"><span class="header-section-number">5.2</span> Tuning Curve</h2>
 <div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The tuning curve above shows how AUC changes across different values of k. The optimal value balances bias and variance, avoiding overfitting while maintaining strong predictive power.</p>
+</section>
+<section id="final-model-evaluation" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="final-model-evaluation"><span class="header-section-number">5.3</span> Final Model Evaluation</h2>
+<p>After selecting k = 21, the final model was trained on the full training set and evaluated on the test set. Performance was assessed using AUC, accuracy, sensitivity, specificity, and the confusion matrix to understand how well the model identified both positive and negative cases. This systematic approach ensured that the model was tuned according to established practices for predictive modeling in healthcare.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting levels: control = 0, case = 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting direction: controls &lt; cases</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 21</code></pre>
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction No Yes
+       No  90  22
+       Yes 11  30
+                                          
+               Accuracy : 0.7843          
+                 95% CI : (0.7106, 0.8466)
+    No Information Rate : 0.6601          
+    P-Value [Acc &gt; NIR] : 0.0005461       
+                                          
+                  Kappa : 0.4933          
+                                          
+ Mcnemar's Test P-Value : 0.0817228       
+                                          
+            Sensitivity : 0.8911          
+            Specificity : 0.5769          
+         Pos Pred Value : 0.8036          
+         Neg Pred Value : 0.7317          
+             Prevalence : 0.6601          
+         Detection Rate : 0.5882          
+   Detection Prevalence : 0.7320          
+      Balanced Accuracy : 0.7340          
+                                          
+       'Positive' Class : No              
+                                          </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Area under the curve: 0.8601</code></pre>
 </div>
 </div>
+</section>
+<section id="confusion-matrix-visualization" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="confusion-matrix-visualization"><span class="header-section-number">5.4</span> Confusion Matrix Visualization</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">5.5</span> Interpretation</h2>
+<p>The KNN model demonstrated strong predictive performance, achieving an accuracy of approximately 0.78 and an AUC of 0.86. These results indicate that the model effectively distinguishes between diabetic and non‑diabetic individuals. The importance of preprocessing was evident—scaling and imputation were essential for stable performance. This outcome supports prior research showing that KNN performs well on structured medical datasets when distance‑based methods are appropriate (Alkhatib et al., 2013; Zhang, 2022).</p>
+</section>
 </section>
 <section id="results" class="level1" data-number="6">
 <h1 data-number="6"><span class="header-section-number">6</span> Results</h1>
@@ -417,7 +491,7 @@ Prediction No Yes
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -433,7 +507,7 @@ Prediction No Yes
 </section>
 <section id="conclusion" class="level1" data-number="9">
 <h1 data-number="9"><span class="header-section-number">9</span> Conclusion</h1>
-<p>The findings from this project show that the K‑Nearest Neighbors algorithm can be a reliable approach for predicting diabetes risk when the data is carefully prepared and the tuning parameter is selected appropriately. With an accuracy of about 0.78 and an AUC of about 0.86, the model demonstrated strong overall performance and was able to separate diabetic and non‑diabetic cases effectively. Although KNN has limitations—such as sensitivity to scaling and higher computational cost—it remains a practical and interpretable method for classification tasks in healthcare settings. These results suggest that KNN can serve as a useful tool for supporting early diabetes risk assessment, especially when paired with thoughtful preprocessing and validation.</p>
+<p>The KNN algorithm proved to be a reliable approach for predicting diabetes risk when the data was properly preprocessed and the tuning parameter was selected using cross‑validation. With strong accuracy and AUC values, the model shows promise as a tool for early diabetes risk assessment.</p>
 </section>
 <section id="references" class="level1" data-number="10">
 <h1 data-number="10"><span class="header-section-number">10</span> References</h1>

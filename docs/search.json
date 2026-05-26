@@ -88,7 +88,7 @@
     "href": "index.html",
     "title": "KNN Diabetes Prediction Capstone",
     "section": "",
-    "text": "Diabetes is a chronic health condition that can lead to serious complications when it is not identified early. Because early detection improves long‑term outcomes, machine learning methods have become increasingly useful for supporting clinical decision‑making. These models can identify patterns in health data that may not be immediately visible through traditional analysis, making them valuable tools for screening and risk assessment (Xing & Bei, 2020; Nain & Tomar, 2023).\nIn this project, I applied the K‑Nearest Neighbors (KNN) algorithm to the Pima Indians Diabetes dataset to predict whether an individual is likely to have diabetes. KNN is a distance‑based classification method that assigns a label to a new observation by comparing it to the most similar cases in the training data (Zhang et al., 2018). Because the algorithm relies directly on the training dataset when making predictions, its performance depends heavily on data quality, preprocessing, and the selection of the tuning parameter k (Zhang, 2022).\nKNN uses distance calculations—typically Euclidean distance—to determine similarity between observations. This makes preprocessing essential, since variables with larger numeric ranges can disproportionately influence the distance metric if the data is not standardized. The choice of k also plays a major role in model performance. Smaller values may lead to overfitting, while larger values may smooth out meaningful distinctions. KNN has been applied in areas such as finance, forecasting, and medical diagnosis due to its simplicity and its ability to perform well when properly tuned (Alkhatib et al., 2013).\nThe purpose of this project was to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, compare it to baseline models, and examine how preprocessing and tuning influence classification accuracy. The broader goal was to determine whether KNN can serve as an effective and interpretable tool for diabetes risk prediction."
+    "text": "Diabetes is a chronic metabolic disease affecting more than 400 million individuals worldwide and remains a leading cause of cardiovascular complications, kidney failure, and premature mortality (International Diabetes Federation, 2023). Early detection is essential because timely intervention can significantly reduce long‑term health risks and improve patient outcomes. As healthcare systems increasingly rely on data‑driven tools, machine learning methods have become valuable for identifying individuals at elevated risk before symptoms become severe (Xing & Bei, 2020; Nain & Tomar, 2023).\nAmong these methods, the k‑Nearest Neighbors (KNN) algorithm is widely used for medical classification tasks due to its simplicity, interpretability, and strong performance on structured clinical datasets (Zhang et al., 2018). KNN predicts the class of a new observation by comparing it to the most similar cases in the training dataset, making it a non‑parametric, instance‑based learning method. Because the algorithm relies directly on distance calculations, its performance is highly sensitive to preprocessing steps such as scaling, handling missing values, and selecting relevant features (Zhang, 2022).\nThe purpose of this project is to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, examine how preprocessing and tuning influence classification accuracy, and determine whether KNN can serve as an effective and interpretable tool for early diabetes risk prediction."
   },
   {
     "objectID": "index.html#dataset",
@@ -159,5 +159,61 @@
     "title": "KNN Diabetes Prediction Capstone",
     "section": "3.5 The Role of k in Model Behavior",
     "text": "3.5 The Role of k in Model Behavior\nChoosing an appropriate value for k is an important part of how the KNN algorithm behaves. When k is set too low, the model becomes overly sensitive to small fluctuations in the data, which can cause it to overfit by reacting strongly to noise or outliers. On the other hand, using a very large k can make the model too generalized, smoothing the decision boundary so much that it misses meaningful patterns in the data. Because of this trade‑off, selecting a balanced k value is essential for achieving predictions that are both accurate and stable."
+  },
+  {
+    "objectID": "index.html#algorithm-overview",
+    "href": "index.html#algorithm-overview",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.1 Algorithm Overview",
+    "text": "3.1 Algorithm Overview\nKNN classifies a new observation (x_0) by examining the training points that are closest to it in the predictor space. The algorithm proceeds through four steps:\n\nCompute the distance between (x_0) and every observation in the training dataset.\n\nRank all distances in ascending order.\n\nSelect the k closest observations (the “neighbors”).\n\nPredict the class label using a majority vote among the neighbors.\n\nThis approach assumes that observations that are close in feature space are likely to share the same class label."
+  },
+  {
+    "objectID": "index.html#distance-metric",
+    "href": "index.html#distance-metric",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.2 Distance Metric",
+    "text": "3.2 Distance Metric\nKNN determines similarity between two observations using a distance function. For continuous predictors, the most common choice is the Euclidean distance, defined as:\n\\[\nd(x_i, x_j) = \\sqrt{\\sum_{p = 1}^{P} (x_{ip} - x_{jp})^2}\n\\]\nThis measures the straight-line distance between two points in a P-dimensional feature space."
+  },
+  {
+    "objectID": "index.html#feature-scaling",
+    "href": "index.html#feature-scaling",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.3 Feature Scaling",
+    "text": "3.3 Feature Scaling\nBecause distance calculations are sensitive to differences in scale, KNN requires that all predictors be standardized. A common transformation is z‑score normalization:\n\\[\nz = \\frac{x - \\mu}{\\sigma}\n\\]\nStandardization ensures that each feature contributes equally to the distance computation. Without scaling, variables with large numeric ranges would dominate the metric."
+  },
+  {
+    "objectID": "index.html#majority-voting-rule",
+    "href": "index.html#majority-voting-rule",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.4 Majority Voting Rule",
+    "text": "3.4 Majority Voting Rule\nOnce the k nearest neighbors are identified, the predicted class for a new observation (x_0) is determined by:\n\\[\n\\hat{y}(x_0) = \\text{mode}(y_{(1)}, y_{(2)}, \\ldots, y_{(k)})\n\\]\nThis project uses the standard unweighted voting rule, where each neighbor contributes equally to the final prediction."
+  },
+  {
+    "objectID": "index.html#choosing-the-value-of-k",
+    "href": "index.html#choosing-the-value-of-k",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.5 Choosing the Value of k",
+    "text": "3.5 Choosing the Value of k\nThe tuning parameter (k) controls the smoothness of the decision boundary:\n\nSmall (k) → low bias, high variance (overfitting)\n\nLarge (k) → high bias, low variance (underfitting)\n\nCross‑validation is typically used to select an optimal value of (k) that balances these trade‑offs."
+  },
+  {
+    "objectID": "index.html#curse-of-dimensionality",
+    "href": "index.html#curse-of-dimensionality",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.6 Curse of Dimensionality",
+    "text": "3.6 Curse of Dimensionality\nAs the number of predictors increases, distances between points become less meaningful. This phenomenon, known as the curse of dimensionality, causes all observations to appear similarly distant, reducing the effectiveness of distance‑based algorithms like KNN.\nHigh‑dimensional data can therefore degrade KNN performance unless dimensionality reduction or feature selection is applied."
+  },
+  {
+    "objectID": "index.html#assumptions",
+    "href": "index.html#assumptions",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.7 Assumptions",
+    "text": "3.7 Assumptions\nAlthough KNN is non‑parametric, it relies on several assumptions:\n\nPredictors must be on a comparable scale.\n\nThe distance metric must be meaningful for the data.\n\nThe dataset should not contain extreme outliers.\n\nThe decision boundary should be locally smooth.\n\nThe number of predictors should be moderate to avoid distance dilution."
+  },
+  {
+    "objectID": "index.html#limitations",
+    "href": "index.html#limitations",
+    "title": "KNN Diabetes Prediction Capstone",
+    "section": "3.8 Limitations",
+    "text": "3.8 Limitations\nKNN has several limitations:\n\nComputationally expensive for large datasets because distances must be computed for every prediction.\n\nSensitive to irrelevant or redundant features.\n\nSensitive to outliers, which can distort neighborhood structure.\n\nDoes not provide feature importance or model coefficients.\n\nPerformance declines in high‑dimensional spaces.\n\nRequires careful tuning of (k)."
   }
 ]

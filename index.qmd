@@ -37,41 +37,98 @@ test$Outcome  <- factor(test$Outcome,  levels = c(0,1), labels = c("No","Yes"))
 ```
 # Introduction
 
-Diabetes is a chronic health condition that can lead to serious complications when it is not identified early. Because early detection improves long‑term outcomes, machine learning methods have become increasingly useful for supporting clinical decision‑making. These models can identify patterns in health data that may not be immediately visible through traditional analysis, making them valuable tools for screening and risk assessment (Xing & Bei, 2020; Nain & Tomar, 2023).
+Diabetes is a chronic metabolic disease affecting more than 400 million individuals worldwide and remains a leading cause of cardiovascular complications, kidney failure, and premature mortality (International Diabetes Federation, 2023). Early detection is essential because timely intervention can significantly reduce long‑term health risks and improve patient outcomes. As healthcare systems increasingly rely on data‑driven tools, machine learning methods have become valuable for identifying individuals at elevated risk before symptoms become severe (Xing & Bei, 2020; Nain & Tomar, 2023).
 
-In this project, I applied the K‑Nearest Neighbors (KNN) algorithm to the Pima Indians Diabetes dataset to predict whether an individual is likely to have diabetes. KNN is a distance‑based classification method that assigns a label to a new observation by comparing it to the most similar cases in the training data (Zhang et al., 2018). Because the algorithm relies directly on the training dataset when making predictions, its performance depends heavily on data quality, preprocessing, and the selection of the tuning parameter *k* (Zhang, 2022).
+Among these methods, the k‑Nearest Neighbors (KNN) algorithm is widely used for medical classification tasks due to its simplicity, interpretability, and strong performance on structured clinical datasets (Zhang et al., 2018). KNN predicts the class of a new observation by comparing it to the most similar cases in the training dataset, making it a non‑parametric, instance‑based learning method. Because the algorithm relies directly on distance calculations, its performance is highly sensitive to preprocessing steps such as scaling, handling missing values, and selecting relevant features (Zhang, 2022).
 
-KNN uses distance calculations—typically Euclidean distance—to determine similarity between observations. This makes preprocessing essential, since variables with larger numeric ranges can disproportionately influence the distance metric if the data is not standardized. The choice of *k* also plays a major role in model performance. Smaller values may lead to overfitting, while larger values may smooth out meaningful distinctions. KNN has been applied in areas such as finance, forecasting, and medical diagnosis due to its simplicity and its ability to perform well when properly tuned (Alkhatib et al., 2013).
-
-The purpose of this project was to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, compare it to baseline models, and examine how preprocessing and tuning influence classification accuracy. The broader goal was to determine whether KNN can serve as an effective and interpretable tool for diabetes risk prediction.
+The purpose of this project is to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, examine how preprocessing and tuning influence classification accuracy, and determine whether KNN can serve as an effective and interpretable tool for early diabetes risk prediction.
 
 # Background
 
-The Pima Indians Diabetes dataset is widely used in machine‑learning research because it provides a structured set of clinical and demographic variables relevant to diabetes risk. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing & Bei, 2020). KNN is particularly sensitive to these steps because it does not build a parametric model; instead, it relies on the structure of the data itself. This makes the algorithm straightforward to implement but also dependent on careful preparation of the input features.
+The Pima Indians Diabetes dataset is widely used in machine‑learning research because it provides a structured set of clinical and demographic variables relevant to diabetes risk. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing & Bei, 2020). Because KNN is a non‑parametric, distance‑based method, it is particularly sensitive to data quality, scaling, and the presence of outliers (Zhang, 2022).
+
+KNN has been applied in various medical contexts, including cardiovascular risk prediction, cancer diagnosis, and metabolic disease classification (Alkhatib et al., 2013). Its interpretability and reliance on local neighborhoods make it suitable for datasets where relationships between predictors and outcomes may be nonlinear or complex. However, its performance depends heavily on selecting an appropriate value for k and ensuring that all predictors are on a comparable scale.
 
 # Methods
 
-The method used in this project is the k‑Nearest Neighbors (KNN) algorithm, a simple but effective approach for classification problems. KNN does not build a traditional statistical model. Instead, it makes predictions by comparing a new observation to the existing data and determining which known cases it most closely resembles. Because of this, KNN is considered a non‑parametric, instance‑based learning method.
+The k‑Nearest Neighbors (KNN) algorithm is a non‑parametric, instance‑based classification method that predicts the class of a new observation by comparing it to the most similar observations in the training dataset. Unlike parametric models, KNN does not estimate coefficients or assume a functional form; instead, it relies entirely on geometric proximity in the feature space (Zhang et al., 2018). Because the algorithm stores all training instances and performs computation only at prediction time, it is often described as a “lazy learner.”
 
-## How KNN Measures Similarity
+## Algorithm Overview
 
-At the core of KNN is the idea of measuring how “close” or “similar” two observations are. To do this, the algorithm uses a distance formula. The most common one, and the one relevant to this project, is Euclidean distance, which calculates the straight‑line distance between two points in a multi‑dimensional space. 
+KNN classifies a new observation \(x_0\) by examining the training points that are closest to it in the predictor space. The algorithm proceeds through four steps:
 
-## Why Scaling Matters
+1. Compute the distance between \(x_0\) and every observation in the training dataset.  
+2. Rank all distances in ascending order.  
+3. Select the k closest observations (the “neighbors”).  
+4. Predict the class label using a majority vote among the neighbors.
 
-Because KNN relies entirely on distance, it is sensitive to the scale of the variables. Features with large numeric ranges can overpower smaller‑scaled features, even if they are equally important. For this reason, KNN requires that all predictors be placed on a similar scale. A common approach is standardization, which transforms each variable so that it has a mean of zero and a standard deviation of one. This ensures that each feature contributes fairly to the distance calculation.
+This approach assumes that observations that are close in feature space are likely to share the same class label.
 
-## Selecting the Neighbors
+## Distance Metric
 
-Once distances are calculated, the algorithm identifies the k closest observations in the training data. These are the “neighbors” that will influence the prediction. The value of k is a tuning parameter that determines how many neighbors are considered. A small k makes the algorithm very sensitive to local patterns, while a larger k smooths out the decision boundary.
+KNN determines similarity between two observations using a distance function. For continuous predictors, the most common choice is the Euclidean distance, defined as:
 
-## How KNN Makes a Prediction
+$$
+d(x_i, x_j) = \sqrt{\sum_{p = 1}^{P} (x_{ip} - x_{jp})^2}
+$$
 
-After identifying the k nearest neighbors, the algorithm looks at the class labels of those neighbors. For classification tasks, KNN uses a majority vote: whichever class appears most often among the neighbors becomes the predicted class for the new observation. This simple voting process is what allows KNN to make decisions without fitting a traditional model.
+This measures the straight-line distance between two points in a P-dimensional feature space.
 
-## The Role of k in Model Behavior
+## Feature Scaling
 
-Choosing an appropriate value for k is an important part of how the KNN algorithm behaves. When k is set too low, the model becomes overly sensitive to small fluctuations in the data, which can cause it to overfit by reacting strongly to noise or outliers. On the other hand, using a very large k can make the model too generalized, smoothing the decision boundary so much that it misses meaningful patterns in the data. Because of this trade‑off, selecting a balanced k value is essential for achieving predictions that are both accurate and stable. 
+Because distance calculations are sensitive to differences in scale, KNN requires that all predictors be standardized. A common transformation is z‑score normalization:
+
+$$
+z = \frac{x - \mu}{\sigma}
+$$
+
+Standardization ensures that each feature contributes equally to the distance computation. Without scaling, variables with large numeric ranges would dominate the metric.
+
+## Majority Voting Rule
+
+Once the k nearest neighbors are identified, the predicted class for a new observation \(x_0\) is determined by:
+
+$$
+\hat{y}(x_0) = \text{mode}(y_{(1)}, y_{(2)}, \ldots, y_{(k)})
+$$
+
+This project uses the standard unweighted voting rule, where each neighbor contributes equally to the final prediction.
+
+## Choosing the Value of k
+
+The tuning parameter \(k\) controls the smoothness of the decision boundary:
+
+- Small \(k\) → low bias, high variance (overfitting)  
+- Large \(k\) → high bias, low variance (underfitting)
+
+Cross‑validation is typically used to select an optimal value of \(k\) that balances these trade‑offs.
+
+## Curse of Dimensionality
+
+As the number of predictors increases, distances between points become less meaningful. This phenomenon, known as the curse of dimensionality, causes all observations to appear similarly distant, reducing the effectiveness of distance‑based algorithms like KNN.
+
+High‑dimensional data can therefore degrade KNN performance unless dimensionality reduction or feature selection is applied.
+
+## Assumptions
+
+Although KNN is non‑parametric, it relies on several assumptions:
+
+- Predictors must be on a comparable scale.  
+- The distance metric must be meaningful for the data.  
+- The dataset should not contain extreme outliers.  
+- The decision boundary should be locally smooth.  
+- The number of predictors should be moderate to avoid distance dilution.
+
+## Limitations
+
+KNN has several limitations:
+
+- Computationally expensive for large datasets because distances must be computed for every prediction.  
+- Sensitive to irrelevant or redundant features.  
+- Sensitive to outliers, which can distort neighborhood structure.  
+- Does not provide feature importance or model coefficients.  
+- Performance declines in high‑dimensional spaces.  
+- Requires careful tuning of \(k\).
 
 # Exploratory Data Analysis
 ```{r, echo=FALSE}

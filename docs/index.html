@@ -73,6 +73,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -117,17 +146,20 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">2</span> Background</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a>
   <ul class="collapse">
-  <li><a href="#how-knn-measures-similarity" id="toc-how-knn-measures-similarity" class="nav-link" data-scroll-target="#how-knn-measures-similarity"><span class="header-section-number">3.1</span> How KNN Measures Similarity</a></li>
-  <li><a href="#why-scaling-matters" id="toc-why-scaling-matters" class="nav-link" data-scroll-target="#why-scaling-matters"><span class="header-section-number">3.2</span> Why Scaling Matters</a></li>
-  <li><a href="#selecting-the-neighbors" id="toc-selecting-the-neighbors" class="nav-link" data-scroll-target="#selecting-the-neighbors"><span class="header-section-number">3.3</span> Selecting the Neighbors</a></li>
-  <li><a href="#how-knn-makes-a-prediction" id="toc-how-knn-makes-a-prediction" class="nav-link" data-scroll-target="#how-knn-makes-a-prediction"><span class="header-section-number">3.4</span> How KNN Makes a Prediction</a></li>
-  <li><a href="#the-role-of-k-in-model-behavior" id="toc-the-role-of-k-in-model-behavior" class="nav-link" data-scroll-target="#the-role-of-k-in-model-behavior"><span class="header-section-number">3.5</span> The Role of k in Model Behavior</a></li>
+  <li><a href="#algorithm-overview" id="toc-algorithm-overview" class="nav-link" data-scroll-target="#algorithm-overview"><span class="header-section-number">3.1</span> Algorithm Overview</a></li>
+  <li><a href="#distance-metric" id="toc-distance-metric" class="nav-link" data-scroll-target="#distance-metric"><span class="header-section-number">3.2</span> Distance Metric</a></li>
+  <li><a href="#feature-scaling" id="toc-feature-scaling" class="nav-link" data-scroll-target="#feature-scaling"><span class="header-section-number">3.3</span> Feature Scaling</a></li>
+  <li><a href="#majority-voting-rule" id="toc-majority-voting-rule" class="nav-link" data-scroll-target="#majority-voting-rule"><span class="header-section-number">3.4</span> Majority Voting Rule</a></li>
+  <li><a href="#choosing-the-value-of-k" id="toc-choosing-the-value-of-k" class="nav-link" data-scroll-target="#choosing-the-value-of-k"><span class="header-section-number">3.5</span> Choosing the Value of k</a></li>
+  <li><a href="#curse-of-dimensionality" id="toc-curse-of-dimensionality" class="nav-link" data-scroll-target="#curse-of-dimensionality"><span class="header-section-number">3.6</span> Curse of Dimensionality</a></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions"><span class="header-section-number">3.7</span> Assumptions</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">3.8</span> Limitations</a></li>
   </ul></li>
   <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">4</span> Exploratory Data Analysis</a></li>
   <li><a href="#modeling-approach" id="toc-modeling-approach" class="nav-link" data-scroll-target="#modeling-approach"><span class="header-section-number">5</span> Modeling Approach</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6</span> Results</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">7</span> Discussion</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">8</span> Limitations</a></li>
+  <li><a href="#limitations-1" id="toc-limitations-1" class="nav-link" data-scroll-target="#limitations-1"><span class="header-section-number">8</span> Limitations</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">9</span> Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10</span> References</a></li>
   </ul>
@@ -163,37 +195,102 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>Diabetes is a chronic health condition that can lead to serious complications when it is not identified early. Because early detection improves long‑term outcomes, machine learning methods have become increasingly useful for supporting clinical decision‑making. These models can identify patterns in health data that may not be immediately visible through traditional analysis, making them valuable tools for screening and risk assessment (Xing &amp; Bei, 2020; Nain &amp; Tomar, 2023).</p>
-<p>In this project, I applied the K‑Nearest Neighbors (KNN) algorithm to the Pima Indians Diabetes dataset to predict whether an individual is likely to have diabetes. KNN is a distance‑based classification method that assigns a label to a new observation by comparing it to the most similar cases in the training data (Zhang et al., 2018). Because the algorithm relies directly on the training dataset when making predictions, its performance depends heavily on data quality, preprocessing, and the selection of the tuning parameter <em>k</em> (Zhang, 2022).</p>
-<p>KNN uses distance calculations—typically Euclidean distance—to determine similarity between observations. This makes preprocessing essential, since variables with larger numeric ranges can disproportionately influence the distance metric if the data is not standardized. The choice of <em>k</em> also plays a major role in model performance. Smaller values may lead to overfitting, while larger values may smooth out meaningful distinctions. KNN has been applied in areas such as finance, forecasting, and medical diagnosis due to its simplicity and its ability to perform well when properly tuned (Alkhatib et al., 2013).</p>
-<p>The purpose of this project was to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, compare it to baseline models, and examine how preprocessing and tuning influence classification accuracy. The broader goal was to determine whether KNN can serve as an effective and interpretable tool for diabetes risk prediction.</p>
+<p>Diabetes is a chronic metabolic disease affecting more than 400 million individuals worldwide and remains a leading cause of cardiovascular complications, kidney failure, and premature mortality (International Diabetes Federation, 2023). Early detection is essential because timely intervention can significantly reduce long‑term health risks and improve patient outcomes. As healthcare systems increasingly rely on data‑driven tools, machine learning methods have become valuable for identifying individuals at elevated risk before symptoms become severe (Xing &amp; Bei, 2020; Nain &amp; Tomar, 2023).</p>
+<p>Among these methods, the k‑Nearest Neighbors (KNN) algorithm is widely used for medical classification tasks due to its simplicity, interpretability, and strong performance on structured clinical datasets (Zhang et al., 2018). KNN predicts the class of a new observation by comparing it to the most similar cases in the training dataset, making it a non‑parametric, instance‑based learning method. Because the algorithm relies directly on distance calculations, its performance is highly sensitive to preprocessing steps such as scaling, handling missing values, and selecting relevant features (Zhang, 2022).</p>
+<p>The purpose of this project is to evaluate the predictive performance of KNN on the Pima Indians Diabetes dataset, examine how preprocessing and tuning influence classification accuracy, and determine whether KNN can serve as an effective and interpretable tool for early diabetes risk prediction.</p>
 </section>
 <section id="background" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Background</h1>
-<p>The Pima Indians Diabetes dataset is widely used in machine‑learning research because it provides a structured set of clinical and demographic variables relevant to diabetes risk. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing &amp; Bei, 2020). KNN is particularly sensitive to these steps because it does not build a parametric model; instead, it relies on the structure of the data itself. This makes the algorithm straightforward to implement but also dependent on careful preparation of the input features.</p>
+<p>The Pima Indians Diabetes dataset is widely used in machine‑learning research because it provides a structured set of clinical and demographic variables relevant to diabetes risk. Prior studies have shown that models trained on this dataset can achieve strong predictive performance when appropriate preprocessing and tuning are applied (Xing &amp; Bei, 2020). Because KNN is a non‑parametric, distance‑based method, it is particularly sensitive to data quality, scaling, and the presence of outliers (Zhang, 2022).</p>
+<p>KNN has been applied in various medical contexts, including cardiovascular risk prediction, cancer diagnosis, and metabolic disease classification (Alkhatib et al., 2013). Its interpretability and reliance on local neighborhoods make it suitable for datasets where relationships between predictors and outcomes may be nonlinear or complex. However, its performance depends heavily on selecting an appropriate value for k and ensuring that all predictors are on a comparable scale.</p>
 </section>
 <section id="methods" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
-<p>The method used in this project is the k‑Nearest Neighbors (KNN) algorithm, a simple but effective approach for classification problems. KNN does not build a traditional statistical model. Instead, it makes predictions by comparing a new observation to the existing data and determining which known cases it most closely resembles. Because of this, KNN is considered a non‑parametric, instance‑based learning method.</p>
-<section id="how-knn-measures-similarity" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="how-knn-measures-similarity"><span class="header-section-number">3.1</span> How KNN Measures Similarity</h2>
-<p>At the core of KNN is the idea of measuring how “close” or “similar” two observations are. To do this, the algorithm uses a distance formula. The most common one, and the one relevant to this project, is Euclidean distance, which calculates the straight‑line distance between two points in a multi‑dimensional space.</p>
+<p>The k‑Nearest Neighbors (KNN) algorithm is a non‑parametric, instance‑based classification method that predicts the class of a new observation by comparing it to the most similar observations in the training dataset. Unlike parametric models, KNN does not estimate coefficients or assume a functional form; instead, it relies entirely on geometric proximity in the feature space (Zhang et al., 2018). Because the algorithm stores all training instances and performs computation only at prediction time, it is often described as a “lazy learner.”</p>
+<section id="algorithm-overview" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="algorithm-overview"><span class="header-section-number">3.1</span> Algorithm Overview</h2>
+<p>KNN classifies a new observation (x_0) by examining the training points that are closest to it in the predictor space. The algorithm proceeds through four steps:</p>
+<ol type="1">
+<li>Compute the distance between (x_0) and every observation in the training dataset.<br>
+</li>
+<li>Rank all distances in ascending order.<br>
+</li>
+<li>Select the k closest observations (the “neighbors”).<br>
+</li>
+<li>Predict the class label using a majority vote among the neighbors.</li>
+</ol>
+<p>This approach assumes that observations that are close in feature space are likely to share the same class label.</p>
 </section>
-<section id="why-scaling-matters" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="why-scaling-matters"><span class="header-section-number">3.2</span> Why Scaling Matters</h2>
-<p>Because KNN relies entirely on distance, it is sensitive to the scale of the variables. Features with large numeric ranges can overpower smaller‑scaled features, even if they are equally important. For this reason, KNN requires that all predictors be placed on a similar scale. A common approach is standardization, which transforms each variable so that it has a mean of zero and a standard deviation of one. This ensures that each feature contributes fairly to the distance calculation.</p>
+<section id="distance-metric" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="distance-metric"><span class="header-section-number">3.2</span> Distance Metric</h2>
+<p>KNN determines similarity between two observations using a distance function. For continuous predictors, the most common choice is the Euclidean distance, defined as:</p>
+<p><span class="math display">\[
+d(x_i, x_j) = \sqrt{\sum_{p = 1}^{P} (x_{ip} - x_{jp})^2}
+\]</span></p>
+<p>This measures the straight-line distance between two points in a P-dimensional feature space.</p>
 </section>
-<section id="selecting-the-neighbors" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="selecting-the-neighbors"><span class="header-section-number">3.3</span> Selecting the Neighbors</h2>
-<p>Once distances are calculated, the algorithm identifies the k closest observations in the training data. These are the “neighbors” that will influence the prediction. The value of k is a tuning parameter that determines how many neighbors are considered. A small k makes the algorithm very sensitive to local patterns, while a larger k smooths out the decision boundary.</p>
+<section id="feature-scaling" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="feature-scaling"><span class="header-section-number">3.3</span> Feature Scaling</h2>
+<p>Because distance calculations are sensitive to differences in scale, KNN requires that all predictors be standardized. A common transformation is z‑score normalization:</p>
+<p><span class="math display">\[
+z = \frac{x - \mu}{\sigma}
+\]</span></p>
+<p>Standardization ensures that each feature contributes equally to the distance computation. Without scaling, variables with large numeric ranges would dominate the metric.</p>
 </section>
-<section id="how-knn-makes-a-prediction" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="how-knn-makes-a-prediction"><span class="header-section-number">3.4</span> How KNN Makes a Prediction</h2>
-<p>After identifying the k nearest neighbors, the algorithm looks at the class labels of those neighbors. For classification tasks, KNN uses a majority vote: whichever class appears most often among the neighbors becomes the predicted class for the new observation. This simple voting process is what allows KNN to make decisions without fitting a traditional model.</p>
+<section id="majority-voting-rule" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="majority-voting-rule"><span class="header-section-number">3.4</span> Majority Voting Rule</h2>
+<p>Once the k nearest neighbors are identified, the predicted class for a new observation (x_0) is determined by:</p>
+<p><span class="math display">\[
+\hat{y}(x_0) = \text{mode}(y_{(1)}, y_{(2)}, \ldots, y_{(k)})
+\]</span></p>
+<p>This project uses the standard unweighted voting rule, where each neighbor contributes equally to the final prediction.</p>
 </section>
-<section id="the-role-of-k-in-model-behavior" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="the-role-of-k-in-model-behavior"><span class="header-section-number">3.5</span> The Role of k in Model Behavior</h2>
-<p>Choosing an appropriate value for k is an important part of how the KNN algorithm behaves. When k is set too low, the model becomes overly sensitive to small fluctuations in the data, which can cause it to overfit by reacting strongly to noise or outliers. On the other hand, using a very large k can make the model too generalized, smoothing the decision boundary so much that it misses meaningful patterns in the data. Because of this trade‑off, selecting a balanced k value is essential for achieving predictions that are both accurate and stable.</p>
+<section id="choosing-the-value-of-k" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="choosing-the-value-of-k"><span class="header-section-number">3.5</span> Choosing the Value of k</h2>
+<p>The tuning parameter (k) controls the smoothness of the decision boundary:</p>
+<ul>
+<li>Small (k) → low bias, high variance (overfitting)<br>
+</li>
+<li>Large (k) → high bias, low variance (underfitting)</li>
+</ul>
+<p>Cross‑validation is typically used to select an optimal value of (k) that balances these trade‑offs.</p>
+</section>
+<section id="curse-of-dimensionality" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="curse-of-dimensionality"><span class="header-section-number">3.6</span> Curse of Dimensionality</h2>
+<p>As the number of predictors increases, distances between points become less meaningful. This phenomenon, known as the curse of dimensionality, causes all observations to appear similarly distant, reducing the effectiveness of distance‑based algorithms like KNN.</p>
+<p>High‑dimensional data can therefore degrade KNN performance unless dimensionality reduction or feature selection is applied.</p>
+</section>
+<section id="assumptions" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="assumptions"><span class="header-section-number">3.7</span> Assumptions</h2>
+<p>Although KNN is non‑parametric, it relies on several assumptions:</p>
+<ul>
+<li>Predictors must be on a comparable scale.<br>
+</li>
+<li>The distance metric must be meaningful for the data.<br>
+</li>
+<li>The dataset should not contain extreme outliers.<br>
+</li>
+<li>The decision boundary should be locally smooth.<br>
+</li>
+<li>The number of predictors should be moderate to avoid distance dilution.</li>
+</ul>
+</section>
+<section id="limitations" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="limitations"><span class="header-section-number">3.8</span> Limitations</h2>
+<p>KNN has several limitations:</p>
+<ul>
+<li>Computationally expensive for large datasets because distances must be computed for every prediction.<br>
+</li>
+<li>Sensitive to irrelevant or redundant features.<br>
+</li>
+<li>Sensitive to outliers, which can distort neighborhood structure.<br>
+</li>
+<li>Does not provide feature importance or model coefficients.<br>
+</li>
+<li>Performance declines in high‑dimensional spaces.<br>
+</li>
+<li>Requires careful tuning of (k).</li>
+</ul>
 </section>
 </section>
 <section id="exploratory-data-analysis" class="level1" data-number="4">
@@ -330,7 +427,7 @@ Prediction No Yes
 <h1 data-number="7"><span class="header-section-number">7</span> Discussion</h1>
 <p>The results show that KNN can be an effective model for predicting diabetes when the data is properly preprocessed and the number of neighbors is carefully tuned. The strong AUC value suggests that the model is able to distinguish well between diabetic and non‑diabetic individuals. These findings are consistent with previous research showing that KNN performs well on medical classification tasks when distance‑based methods are appropriate (Alkhatib et al., 2013). The importance of preprocessing was also clear in this project. Without scaling and imputation, the model’s performance would have been significantly weaker, which aligns with recommendations in the literature (Zhang, 2022).</p>
 </section>
-<section id="limitations" class="level1" data-number="8">
+<section id="limitations-1" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Limitations</h1>
 <p>Although the model performed well, there are several limitations to consider. The dataset is relatively small and represents a specific population, which limits generalizability. KNN is also computationally expensive for larger datasets because it must compute distances for every prediction. Additionally, KNN does not provide direct insight into feature importance, which can make interpretation more challenging compared to models like logistic regression or decision trees.</p>
 </section>

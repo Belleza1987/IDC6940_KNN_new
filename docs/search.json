@@ -255,8 +255,8 @@
     "objectID": "index.html#model-tuning-and-validation",
     "href": "index.html#model-tuning-and-validation",
     "title": "KNN Diabetes Prediction Capstone",
-    "section": "5.1 5.1 Model Tuning and Validation",
-    "text": "5.1 5.1 Model Tuning and Validation\nTo identify an appropriate value for k, a tuning process was conducted using 10‑fold cross‑validation. Each candidate model was evaluated using the Area Under the ROC Curve (AUC), which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain & Tomar, 2023).\nThe cross‑validation results indicated that k = r best_k produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018)."
+    "section": "5.1 Model Tuning and Validation",
+    "text": "5.1 Model Tuning and Validation\nTo identify an appropriate value for k, a tuning process was conducted using 10‑fold cross‑validation. Each candidate model was evaluated using the Area Under the ROC Curve (AUC), which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain & Tomar, 2023).\nThe cross‑validation results indicated that k = r best_k produced the highest average AUC across folds. This aligns with findings that slightly larger neighborhood sizes can help stabilize predictions in noisy or heterogeneous datasets (Zhang et al., 2018)."
   },
   {
     "objectID": "index.html#tuning-curve",

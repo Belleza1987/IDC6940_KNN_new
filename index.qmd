@@ -196,7 +196,7 @@ corrplot(cor(numeric_vars), method = "color")
 
 The **K‑Nearest Neighbors (KNN)** algorithm was selected for this project because it performs well on structured medical datasets and has been shown to be effective in similar health‑related prediction tasks (Xing & Bei, 2020). Before training the model, all numeric predictors were standardized so that each variable contributed equally to the distance calculations. This step is especially important in clinical datasets where measurements such as glucose and BMI exist on very different scales.
 
-## 5.1 Model Tuning and Validation
+## Model Tuning and Validation
 
 To identify an appropriate value for *k*, a tuning process was conducted using **10‑fold cross‑validation**. Each candidate model was evaluated using the **Area Under the ROC Curve (AUC)**, which provides a more reliable measure of discrimination than accuracy alone—particularly in medical prediction settings (Nain & Tomar, 2023).
 

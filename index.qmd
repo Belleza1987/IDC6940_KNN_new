@@ -148,7 +148,6 @@ df_processed$Outcome <- factor(df_processed$Outcome,
 The dataset is moderately imbalanced, with more non‑diabetic cases than diabetic cases. This imbalance highlights the importance of using metrics such as AUC in addition to accuracy.
 
 ```{r, echo=FALSE}
-
 df_processed %>%
   count(Outcome) %>%
   ggplot(aes(x = Outcome, y = n, fill = Outcome)) +
